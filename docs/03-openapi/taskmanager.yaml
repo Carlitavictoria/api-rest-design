@@ -14,6 +14,8 @@ servers:
   description: SwaggerHub API Auto Mocking
 - url: https://api.taskmanager.dev/v1
   description: Servidor de desarrollo
+- url: https://staging.api.taskmanager.dev/v1
+  description: Servidor de staging
 tags:
 - name: Tasks
   description: Operaciones relacionadas con la gestión de tareas
