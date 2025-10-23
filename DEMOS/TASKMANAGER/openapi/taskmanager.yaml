@@ -1,0 +1,152 @@
+openapi: 3.0.3
+info:
+  title: Task Manager API
+  description: API para gestionar tareas con enfoque API First (demo del curso).
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/v1
+    description: Producción (ejemplo)
+  - url: http://localhost:3000/v1
+    description: Desarrollo local
+tags:
+  - name: Tasks
+    description: Operaciones sobre tareas
+components:
+  schemas:
+    Task:
+      type: object
+      required: 
+        - title
+        - status
+      properties:
+        id:
+          type: string
+          example: "64f1b2c9a8e5f9a12c34d567"
+        title:
+          type: string
+          example: "Preparar demo API First"
+        description:
+          type: string
+          example: "Crear contrato OpenAPI y escenarios de prueba"
+        status:
+          type: string
+          enum: [todo, in_progress, done]
+          example: "todo"
+        priority:
+          type: string
+          enum: [low, medium, high]
+          example: "medium"
+        dueDate:
+          type: string
+          format: date-time
+          example: "2025-10-21T12:00:00Z"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          
+paths:
+  /tasks:
+    get:
+      tags: [Tasks]
+      summary: Listar tareas
+      description: Obtiene la lista de tareas. Permite filtros mediante query params.
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [todo, in_progress, done]
+          description: Filtrar por estado
+        - in: query
+          name: priority
+          schema:
+            type: string
+            enum: [low, medium, high]
+          description: Filtrar por prioridad
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Página de resultados
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Tamaño de página
+      responses:
+        '200':
+            description: Lista paginada de tareas
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required: [items, page, limit, total]
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Task'
+                    page:
+                      type: integer
+                      example: 1
+                    limit:
+                      type: integer
+                      example: 10
+                    total:
+                      type: integer
+                      example: 37
+                examples:
+                  ejemplo:
+                    value:
+                      items:
+                        - id: "64f1b2c9a8e5f9a12c34d567"
+                          title: "Preparar demo API First"
+                          status: "in_progress"
+                          priority: "high"
+                          dueDate: "2025-10-21T12:00:00Z"
+                      page: 1
+                      limit: 10
+                      total: 1
+                  ejemplo2:
+                    value:
+                      items:
+                        - id: "64f1b2c9a8e5f9a12c34d567"
+                          title: "Preparar demo API First"
+                          status: "in_progress"
+                          priority: "low"
+                          dueDate: "2025-10-21T12:00:00Z"
+                      page: 1
+                      limit: 10
+                      total: 1
+        '400':
+          description: Parámetros de consulta inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: "Error inesperado en la base de datos"
+            example: "Validation failed"
+            details:
+              type: string
+              example: "The field 'title' is required"

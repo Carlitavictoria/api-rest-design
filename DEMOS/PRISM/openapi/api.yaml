@@ -1,0 +1,17 @@
+openapi: 3.0.3
+info:
+  title: Demo API
+  version: 1.0.0
+servers: 
+  - url: special-palm-tree-jgrw6vp94j3pwv-4010.app.github.dev
+paths:
+  /hello:
+    get:
+      summary: Saludo de prueba
+      responses:
+        '200':
+          description: Respuesta ejemplo
+          content:
+            application/json:
+              example:
+                message: "Hola desde Swagger Mock"
