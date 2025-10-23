@@ -1,0 +1,21 @@
+openapi: 3.0.3
+info:
+  title: Task Manager API
+  description: API para la gestión de tareas del curso Diseño de APIs REST
+  contact:
+    name: Equipo del curso
+    email: soporte@taskmanager.dev
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/fausti/LAB1/1.0.0
+  description: SwaggerHub API Auto Mocking
+- url: https://api.taskmanager.dev/v1
+  description: Servidor de desarrollo
+tags:
+- name: Tasks
+  description: Operaciones relacionadas con la gestión de tareas
+paths: {}
+
