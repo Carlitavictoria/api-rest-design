@@ -1,0 +1,11 @@
+.gitignore
+.openapi-generator-ignore
+api.ts
+api/apis.ts
+api/defaultApi.ts
+git_push.sh
+model/modelError.ts
+model/models.ts
+model/newTask.ts
+model/task.ts
+model/tasksGet200Response.ts
