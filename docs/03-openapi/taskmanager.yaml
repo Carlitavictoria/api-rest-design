@@ -118,7 +118,7 @@ components:
           type: string
           format: date-time
           example: "2025-10-30T14:00:00Z"
-        tags:                         # <-- 
+        tags:                         
           type: array
           items:
             type: string
