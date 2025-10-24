@@ -42,8 +42,16 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Task'          
-               
+                  $ref: '#/components/schemas/Task'    
+              examples:
+                ejemplo:
+                  value:
+                    - id: "1"
+                      title: "Mock desde OpenAPI"
+                      status: "todo"
+                    - id: "2"
+                      title: "Preparar práctica de OpenAPI"
+                      status: "in_progress"                        
         # (4) Al menos una 4xx
         '400':
           description: Petición inválida
@@ -71,11 +79,16 @@ paths:
               required: [title]
       responses:
         '201':
-          description: Tarea creada
+          description: Tarea creada correctamente
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
+              examples:
+                ejemplo:
+                  value:
+                    id: "2"
+                    title: "Nueva tarea desde mock"
+                    status: "todo"
+                    createdAt: "2025-01-01T10:00:00Z"                
         # (4) Al menos una 4xx
         '400':
           description: Datos de entrada inválidos
@@ -134,4 +147,6 @@ components:
         details:
           type: string
           example: "The field 'title' is required"
+
+         
         
