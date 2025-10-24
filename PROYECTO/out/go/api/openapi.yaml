@@ -1,0 +1,232 @@
+openapi: 3.0.3
+info:
+  description: API para gestionar tareas
+  title: Task Manager API
+  version: 1.0.0
+servers:
+- description: Desarrollo CodeSpace
+  url: https://special-palm-tree-jgrw6vp94j3pwv-3000.app.github.dev
+paths:
+  /tasks:
+    get:
+      description: Obtiene una lista paginada de tareas opcionalmente filtradas
+      operationId: tasksGET
+      parameters:
+      - description: Página de resultados
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          minimum: 1
+          type: integer
+        style: form
+      - description: Número de resultados por página
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          maximum: 100
+          minimum: 1
+          type: integer
+        style: form
+      - description: Filtrar por estado
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          enum:
+          - todo
+          - in_progress
+          - done
+          type: string
+        style: form
+      - description: Filtrar por prioridad
+        explode: true
+        in: query
+        name: priority
+        required: false
+        schema:
+          enum:
+          - low
+          - medium
+          - high
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_tasks_get_200_response"
+          description: Lista paginada de tareas
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error genérico
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error genérico
+      summary: Listar tareas
+      x-eov-operation-handler: controllers/DefaultController
+    post:
+      operationId: tasksPOST
+      requestBody:
+        content:
+          application/json:
+            example:
+              title: Revisar errores
+              status: todo
+              priority: medium
+            schema:
+              $ref: "#/components/schemas/NewTask"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          description: Tarea creada
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error genérico
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error genérico
+      summary: Crear nueva tarea
+      x-eov-operation-handler: controllers/DefaultController
+components:
+  responses:
+    ErrorResponse:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Error genérico
+  schemas:
+    Task:
+      example:
+        id: 64f1b2c9a8e5f91
+        title: Comprar pan
+        priority: medium
+        status: todo
+      properties:
+        id:
+          example: 64f1b2c9a8e5f91
+          type: string
+        title:
+          example: Comprar pan
+          type: string
+        status:
+          enum:
+          - todo
+          - in_progress
+          - done
+          example: todo
+          type: string
+        priority:
+          enum:
+          - low
+          - medium
+          - high
+          example: medium
+          type: string
+      required:
+      - id
+      - status
+      - title
+      type: object
+    NewTask:
+      example:
+        title: Aprender OpenAPI
+        priority: medium
+        status: todo
+      properties:
+        title:
+          example: Aprender OpenAPI
+          type: string
+        status:
+          default: todo
+          enum:
+          - todo
+          - in_progress
+          - done
+          type: string
+        priority:
+          default: medium
+          enum:
+          - low
+          - medium
+          - high
+          type: string
+      required:
+      - title
+      type: object
+    Error:
+      example:
+        details: Campos inválidos
+        message: Error inesperado
+      properties:
+        message:
+          example: Error inesperado
+          type: string
+        details:
+          example: Campos inválidos
+          type: string
+      required:
+      - message
+      type: object
+    _tasks_get_200_response:
+      example:
+        totalItems: 42
+        limit: 10
+        totalPages: 5
+        page: 1
+        items:
+        - id: 64f1b2c9a8e5f91
+          title: Comprar pan
+          priority: medium
+          status: todo
+        - id: 64f1b2c9a8e5f91
+          title: Comprar pan
+          priority: medium
+          status: todo
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/Task"
+          type: array
+        page:
+          example: 1
+          type: integer
+        limit:
+          example: 10
+          type: integer
+        totalItems:
+          example: 42
+          type: integer
+        totalPages:
+          example: 5
+          type: integer
+      required:
+      - items
+      - limit
+      - page
+      - totalItems
+      type: object
