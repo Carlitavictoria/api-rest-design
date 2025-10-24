@@ -35,27 +35,22 @@ paths:
       description: Devuelve una lista de tareas registradas
       responses:
         '200':
-          description: Lista de tareas obtenida correctamente
+
+          description: Lista de tareas
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      example: "1"
-                    title:
-                      type: string
-                      example: "Aprender OpenAPI"
-                    status:
-                      type: string
-                      example: "todo"
+                  $ref: '#/components/schemas/Task'          
+               
         # (4) Al menos una 4xx
         '400':
           description: Petición inválida
-
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       # (3) operationId requerido por el linter
       operationId: createTask
@@ -70,10 +65,9 @@ paths:
             schema:
               type: object
               properties:
-                title:
-                  type: string
-                status:
-                  type: string
+                  id: { type: string, example: "1" }
+                  title: { type: string, example: "Aprender OpenAPI" }
+                  status: { type: string, example: "todo" }
               required: [title]
       responses:
         '201':
@@ -81,21 +75,14 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    example: "1"
-                  title:
-                    type: string
-                    example: "Aprender OpenAPI"
-                  status:
-                    type: string
-                    example: "todo"
+                $ref: '#/components/schemas/Task'
         # (4) Al menos una 4xx
         '400':
           description: Datos de entrada inválidos
-
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   # (1) Definición de esquema de seguridad
   securitySchemes:
@@ -103,3 +90,48 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    Task:
+      type: object
+      required:
+        - title
+        - status
+      properties:
+        id:
+          type: string
+          example: "64ab32cd9f0c1e12a45b78d9"
+        title:
+          type: string
+          example: "Preparar práctica de OpenAPI"
+        description:
+          type: string
+          example: "Definir modelos y esquemas en OpenAPI"
+        status:
+          type: string
+          enum: [todo, in_progress, done]
+          example: "todo"
+        priority:
+          type: string
+          enum: [low, medium, high]
+          example: "medium"
+        dueDate:
+          type: string
+          format: date-time
+          example: "2025-10-30T14:00:00Z"
+        tags:                         # <-- 
+          type: array
+          items:
+            type: string
+          example: ["work", "urgent"]
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          example: "Validation error"
+        details:
+          type: string
+          example: "The field 'title' is required"
+        
