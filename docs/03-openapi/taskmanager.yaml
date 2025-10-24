@@ -17,7 +17,89 @@ servers:
 - url: https://staging.api.taskmanager.dev/v1
   description: Servidor de staging
 tags:
-- name: Tasks
-  description: Operaciones relacionadas con la gestión de tareas
-paths: {}
+  - name: Tasks
+    description: Operaciones relacionadas con la gestión de tareas
 
+# (2) Seguridad global: satisface "security-defined"
+security:
+  - bearerAuth: []
+
+paths:
+  /tasks:
+    get:
+      # (3) operationId requerido por el linter
+      operationId: listTasks
+      tags:
+        - Tasks
+      summary: Obtener todas las tareas
+      description: Devuelve una lista de tareas registradas
+      responses:
+        '200':
+          description: Lista de tareas obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: "1"
+                    title:
+                      type: string
+                      example: "Aprender OpenAPI"
+                    status:
+                      type: string
+                      example: "todo"
+        # (4) Al menos una 4xx
+        '400':
+          description: Petición inválida
+
+    post:
+      # (3) operationId requerido por el linter
+      operationId: createTask
+      tags:
+        - Tasks
+      summary: Crear una nueva tarea
+      description: Crea una nueva tarea a partir de los datos enviados
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                status:
+                  type: string
+              required: [title]
+      responses:
+        '201':
+          description: Tarea creada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "1"
+                  title:
+                    type: string
+                    example: "Aprender OpenAPI"
+                  status:
+                    type: string
+                    example: "todo"
+        # (4) Al menos una 4xx
+        '400':
+          description: Datos de entrada inválidos
+
+components:
+  # (1) Definición de esquema de seguridad
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
