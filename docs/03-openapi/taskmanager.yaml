@@ -33,32 +33,73 @@ paths:
         - Tasks
       summary: Obtener todas las tareas
       description: Devuelve una lista de tareas registradas
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+          description: Página de resultados
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+          description: Número de resultados por página
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [todo, in_progress, done]
+          description: Filtrar por estado
+        - in: query
+          name: priority
+          schema:
+            type: string
+            enum: [low, medium, high]
+          description: Filtrar por prioridad  
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Buscar texto en el título de la tarea          
       responses:
         '200':
-
-          description: Lista de tareas
+          description: Lista paginada de tareas
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Task'    
-              examples:
-                ejemplo:
-                  value:
-                    - id: "1"
-                      title: "Mock desde OpenAPI"
-                      status: "todo"
-                    - id: "2"
-                      title: "Preparar práctica de OpenAPI"
-                      status: "in_progress"                        
+                type: object
+                required: [items, page, limit, totalItems]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+                  page:
+                    type: integer
+                    example: 1
+                  limit:
+                    type: integer
+                    example: 10
+                  totalItems:
+                    type: integer
+                    example: 42
+                  totalPages:
+                    type: integer
+                    example: 5
         # (4) Al menos una 4xx
         '400':
           description: Petición inválida
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/ErrorResponse'   
+        '500':
+          $ref: '#/components/responses/ErrorResponse'                                            
     post:
       # (3) operationId requerido por el linter
       operationId: createTask
@@ -95,15 +136,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/ErrorResponse'   
+        '500':
+          $ref: '#/components/responses/ErrorResponse'                                              
 components:
-  # (1) Definición de esquema de seguridad
+  # (1) Definición de esquema de seguridad            
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
   schemas:
+     
     Task:
       type: object
       required:
@@ -147,6 +191,28 @@ components:
         details:
           type: string
           example: "The field 'title' is required"
-
-         
-        
+    ProblemDetails:    
+      type: object
+      properties:
+        type:
+          type: string
+          example: "https://api.ejemplo.com/errors/validation"
+        title:
+          type: string
+          example: "Validation error"
+        status:
+          type: integer
+          example: 400
+        detail:
+          type: string
+          example: "Missing field 'title'"
+        instance:
+          type: string
+          example: "/tasks"  
+  responses:
+    ErrorResponse:
+      description: Error genérico
+      content:
+        application/json:
+          schema:
+           $ref: '#/components/schemas/ProblemDetails'         
